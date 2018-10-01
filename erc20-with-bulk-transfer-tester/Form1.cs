@@ -522,8 +522,8 @@ namespace erc20_with_bulk_transfer_tester
             var transactionFunction = wrapperContract.GetFunction("transaction");
             var transactionFromFunction = wrapperContract.GetFunction("transactionFrom");
             
-            var gasTF = await transactionFunction.EstimateGasAsync(null);
-            var transactionFunctionReceipt = await transactionFunction.SendTransactionAndWaitForReceiptAsync(accounts[0], gasTF, null, null);
+            var gasTF = await transactionFunction.EstimateGasAsync(accounts[0], new HexBigInteger(1000000), null);
+            var transactionFunctionReceipt = await transactionFunction.SendTransactionAndWaitForReceiptAsync(accounts[0], new HexBigInteger(gasTF.Value + 200), null);
             
             StatusProgressBar.Value += 30;
             StatusTextBox.Text = "transaction function";
@@ -532,13 +532,13 @@ namespace erc20_with_bulk_transfer_tester
 
             // Call wrapper contract transaction from
 
-            var gasTFF = await transactionFromFunction.EstimateGasAsync(accounts[0]);
-            var transactionFromFunctionReceipt = await transactionFromFunction.SendTransactionAndWaitForReceiptAsync(accounts[0], gasTFF, null, null, functionInput: new object[] { accounts[0] });
+            var gasTFF = await transactionFromFunction.EstimateGasAsync(accounts[0], new HexBigInteger(1000000), null, functionInput: new object[] { accounts[0] });
+            var transactionFromFunctionReceipt = await transactionFromFunction.SendTransactionAndWaitForReceiptAsync(accounts[0], new HexBigInteger(gasTFF.Value + 200), null, null, functionInput: new object[] { accounts[0] });
 
             StatusProgressBar.Value += 10;
             StatusTextBox.Text = "transaction from function";
 
-            //Console.WriteLine("Bulk Transfer From: " + transactionFromFunctionReceipt.CumulativeGasUsed);
+            Console.WriteLine("Bulk Transfer From: " + transactionFromFunctionReceipt.CumulativeGasUsed);
 
             EndProgress();
         }
